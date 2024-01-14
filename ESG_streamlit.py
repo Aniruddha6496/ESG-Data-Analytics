@@ -17,7 +17,7 @@ from streamlit_lottie import st_lottie
 data = pd.read_csv("ESG_cleaned_data.csv")
 data.set_index(['isin','country','year'],inplace=True,drop=True)
 
-emission_metrics = pd.read_csv(r"F:\Data Science Projects\ESG Book\data\Emissions_metrics_data_dictionary.csv")
+emission_metrics = pd.read_csv("Emissions_metrics_data_dictionary.csv")
 emission_metrics = emission_metrics.iloc[:19,:]
 emission_metrics.set_index('Key',inplace=True,drop=True)
 
