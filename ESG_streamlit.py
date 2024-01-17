@@ -14,10 +14,10 @@ from streamlit_lottie import st_lottie
 
 # Importing the Data 
 
-data = pd.read_csv("ESG_cleaned_data.csv")
+data = pd.read_csv(r"F:\Data Science Projects\ESG Book\artifacts\ESG_cleaned_data.csv")
 data.set_index(['isin','country','year'],inplace=True,drop=True)
 
-emission_metrics = pd.read_csv("Emissions_metrics_data_dictionary.csv")
+emission_metrics = pd.read_csv(r"F:\Data Science Projects\ESG Book\data\Emissions_metrics_data_dictionary.csv")
 emission_metrics = emission_metrics.iloc[:19,:]
 emission_metrics.set_index('Key',inplace=True,drop=True)
 
@@ -54,8 +54,10 @@ st.plotly_chart(fig1)
 ### Plot-2
 st.subheader('Mean Emissions across Countries or Companies: 2013 to 2023')
 
-sort_plot2 = st.selectbox('Select an option to sort by',['Country','Company'],key='sort_plot2')
-em_metric_sel_plot2 = st.selectbox('Select the Emission Metric you want to assess',em_metric_names,key='em_metric_sel')
+with st.form('user_inputs_2'):
+    sort_plot2 = st.selectbox('Select an option to sort by',['Country','Company'],key='sort_plot2')
+    em_metric_sel_plot2 = st.selectbox('Select the Emission Metric you want to assess',em_metric_names,key='em_metric_sel')
+    st.form_submit_button()
 
 if sort_plot2 == 'Country':
     sort_plot2_sel = 'country'
@@ -78,16 +80,18 @@ st.plotly_chart(fig2)
 ### Plot-3
 st.subheader('Mean Distribution of Emission Metrics across Countries or Companies: 2013 to 2023')
 
-sort_plot3 = st.selectbox('Select an option to sort by',['Country','Company'],key='sort_plot3')
+with st.form('user_inputs_3'):
+    sort_plot3 = st.selectbox('Select an option to sort by',['Country','Company'],key='sort_plot3')
 
-if sort_plot3 == 'Country':
-    sort_plot3_sel = 'country'
-    subcat_plot3 = data.index.levels[1].to_list()
-else:
-    sort_plot3_sel = 'isin'
-    subcat_plot3 = data.index.levels[0].to_list()   
+    if sort_plot3 == 'Country':
+        sort_plot3_sel = 'country'
+        subcat_plot3 = data.index.levels[1].to_list()
+    else:
+        sort_plot3_sel = 'isin'
+        subcat_plot3 = data.index.levels[0].to_list()   
 
-subcat_plot3_sel = st.selectbox('Select the sub-category',subcat_plot3,key='subcat_plot3_sel')
+    subcat_plot3_sel = st.selectbox('Select the sub-category',subcat_plot3,key='subcat_plot3_sel')
+    st.form_submit_button()
 
 em_total = data.groupby(sort_plot3_sel)[em_metric_names].mean().loc[subcat_plot3_sel,:].sum()
 em_ind = data.groupby(sort_plot3_sel)[em_metric_names].mean().loc[subcat_plot3_sel,:]
@@ -115,7 +119,9 @@ st.pyplot(fig3)
 ### Plot-4
 st.subheader('Aggregate Emission Metrics Across All Companies: 2013 to 2023')
 
-country_sel_plot4 = st.selectbox('Select the Country to sort by',country_names,key='country_sel_plot4')
+with st.form('user_inputs_4'):
+    country_sel_plot4 = st.selectbox('Select the Country to sort by',country_names,key='country_sel_plot4')
+    st.form_submit_button()
 
 font = {'size':16}
 plt.rc('font',**font)
@@ -128,11 +134,11 @@ plt.suptitle(f'Aggregate Emission Metrics Across All Companies in {country_sel_p
 
 if country_sel_plot4 == 'All Countries':
     for i,col in enumerate(data.columns):
-        data.groupby('year')[col].sum().plot(kind='bar',ax=ax4.ravel()[i],title=col+': '+emission_metrics.loc[col,'Name'])
+        data.groupby('year')[col].sum().plot(kind='bar',ax=ax4.ravel()[i],title=col+': '+emission_metrics.loc[col,'Name'],rot=0)
         ax4.ravel()[i].tick_params(axis='both',labelsize=14)
 else:
     for i,col in enumerate(data.columns):
-        data.groupby(['country','year'])[col].mean()[country_sel_plot4].plot(kind='bar',ax=ax4.ravel()[i],title=col+': '+emission_metrics.loc[col,'Name'])
+        data.groupby(['country','year'])[col].mean()[country_sel_plot4].plot(kind='bar',ax=ax4.ravel()[i],title=col+': '+emission_metrics.loc[col,'Name'],rot=0)
         ax4.ravel()[i].tick_params(axis='both',labelsize=14)
     
 plt.tight_layout()
@@ -141,11 +147,13 @@ st.pyplot(fig4)
 ### Plot-5
 st.subheader('Emission Metrics for Companies between 2013 and 2023')
 
-metric_sel_plot5 = st.selectbox('Select the emission metric you want to assess',em_metric_names,key='metric_sel_plot5')
-company_sel_plot5 = st.selectbox('Select the company to assess',company_names,key='company_sel_plot5')
+with st.form('user_inputs_5'):
+    metric_sel_plot5 = st.selectbox('Select the emission metric you want to assess',em_metric_names,key='metric_sel_plot5')
+    company_sel_plot5 = st.selectbox('Select the company to assess',company_names,key='company_sel_plot5')
+    st.form_submit_button()
 
 fig5 = plt.figure(figsize=(12,5))
-data.loc[company_sel_plot5][metric_sel_plot5].plot(kind='bar')
+data.loc[company_sel_plot5][metric_sel_plot5].plot(kind='bar',rot=0)
 plt.title(f'{metric_sel_plot5} Metric for Company: {company_sel_plot5} between 2013 and 2023',pad=10,size=16)
 plt.xlabel('Year',labelpad=10,size=14)
 plt.xticks(range(len(years)),years)
@@ -156,21 +164,23 @@ st.pyplot(fig5)
 ### Plot-6
 st.subheader('Year on Year Change in Emission Metric for Country or Company between 2013 and 2023')
 
-sort_plot6 = st.selectbox('Select an option to sort by',['Country','Company'],key='sort_plot6')
+with st.form('user_inputs_6'):
+    sort_plot6 = st.selectbox('Select an option to sort by',['Country','Company'],key='sort_plot6')
 
-if sort_plot6 == 'Country':
-    sort_plot6_sel = 'country'
-    subcat_plot6 = data.index.levels[1].to_list()
-else:
-    sort_plot6_sel = 'isin'
-    subcat_plot6 = data.index.levels[0].to_list()   
+    if sort_plot6 == 'Country':
+        sort_plot6_sel = 'country'
+        subcat_plot6 = data.index.levels[1].to_list()
+    else:
+        sort_plot6_sel = 'isin'
+        subcat_plot6 = data.index.levels[0].to_list()   
 
-subcat_plot6_sel = st.selectbox('Select the sub-category',subcat_plot6,key='subcat_plot6_sel')
-em_metric_sel_plot6 = st.selectbox('Select the emission metric to assess',em_metric_names,key='em_metric_sel_plot6')
+    subcat_plot6_sel = st.selectbox('Select the sub-category',subcat_plot6,key='subcat_plot6_sel')
+    em_metric_sel_plot6 = st.selectbox('Select the emission metric to assess',em_metric_names,key='em_metric_sel_plot6')
+    st.form_submit_button()
 
 fig6 = plt.figure(figsize=(20,5))
 plt.title(f'Year on Year change in {em_metric_sel_plot6} Emission for {sort_plot6}: {subcat_plot6_sel} Between 2013 and 2023',pad=10,size=18)
-(data.groupby([sort_plot6_sel,'year'])[em_metric_sel_plot6].mean().pct_change()*100)[subcat_plot6_sel].drop(2013,axis=0).plot(kind='bar')
+(data.groupby([sort_plot6_sel,'year'])[em_metric_sel_plot6].mean().pct_change()*100)[subcat_plot6_sel].drop(2013,axis=0).plot(kind='bar',rot=0)
 plt.xlabel('Year',labelpad=10,size=16)
 plt.ylabel('Percent Change (%)',labelpad=10,size=16);
 
